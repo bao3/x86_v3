@@ -1,0 +1,66 @@
+This package contains the source code for the drivers 
+that are included in the VMware ESX server product.
+
+To build the drivers, execute the 'build-vmkdrivers.sh' 
+script. 
+
+The following program versions should be used to compile
+the drivers:
+
+  gcc version 4.1.2-9
+  ld from binutils-2.17.50.0.15-modcall
+  GNU grep
+  GNU sed
+  GNU xargs
+  GNU mkdir
+
+Unless explicitly stated otherwise, all of the files in 
+this package are distributed under the GNU General 
+Public License - see the accompanying COPYING file for 
+more details.
+=======================================
+How to build the vib driver
+
+1. Build moxa_dio driver in CentOS 5 x86_64
+
+The build build-moxa_dio.sh is used for building the moxa_dio device driver.
+You can launch it to make the device driver for VMware ESXi 6.x.
+
+[root@localhost vmkdrivers-gpl_6.7_moxa]# sh build-moxa_dio.sh
+
+Finally, the device driver will be located at this path, BLD/build/vmkdriver-moxa_dio-CUR/release/vmkernel64/moxa_dio. It also copies to moxa_dio_fakeroot/usr/lib/vmware/vmkmod/moxa_dio for preparing the vib file making.
+
+2. Build moxa_pled driver in CentOS 5 x86_64
+
+The build build-moxa_pled.sh is used for building the moxa_pled device driver.
+You can launch it to make the device driver for VMware ESXi 6.x.
+
+[root@localhost vmkdrivers-gpl_6.7_moxa]# sh build-moxa_pled.sh
+
+Finally, the device driver will be located at this path, BLD/build/vmkdriver-moxa_pled-CUR/release/vmkernel64/moxa_pled. It also copies to moxa_pled_fakeroot/usr/lib/vmware/vmkmod/moxa_pled for preparing the vib file making.
+
+3. Build the DA820DIO.vib package in CentOS 6 i386.
+
+If the moxa_dio_fakeroot/ is ready, you should use the vibauthor to make the DA820DIO.vib in CentOS 6 i386 system. You can use this command to build the DA820DIO.vib package.
+
+[root@CentOS6VM vmkdrivers-gpl_6.7_moxa]# cd moxa_dio_fakeroot/
+[root@CentOS6VM moxa_dio_fakeroot]# vibauthor -C -t . -v ../../DA820DIO.vib -f
+
+The vib file would output at this path.
+
+[root@CentOS6VM moxa_dio_fakeroot]# ls ../../DA820DIO.vib
+../../DA820DIO.vib
+
+4. Build the DA820PLED.vib package in CentOS 6 i386.
+
+If the moxa_pled_fakeroot/ is ready, you should use the vibauthor to make the DA820PLED.vib in CentOS 6 i386 system. You can use this command to build the DA820PLED.vib package.
+
+[root@CentOS6VM vmkdrivers-gpl_6.7_moxa]# cd moxa_pled_fakeroot/
+[root@CentOS6VM moxa_pled_fakeroot]# vibauthor -C -t . -v ../../DA820PLED.vib -f
+
+The vib file would output at this path.
+
+[root@CentOS6VM moxa_pled_fakeroot]# ls ../../DA820PLED.vib
+../../DA820PLED.vib
+
+5. Put the DA820PLED.vib and DA820PLED.vib to moxa-da-820c-serials-vmware-esxi-v6.7-driver-v1.0\Host_driver\.

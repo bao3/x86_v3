@@ -1,0 +1,12 @@
+[Unit]
+Description=Moxa platform IRIG-B sync time service
+
+[Service]
+Type=oneshot
+ExecStart=/etc/init.d/mx_irigb.sh start
+ExecStop=/etc/init.d/mx_irigb.sh stop
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
+

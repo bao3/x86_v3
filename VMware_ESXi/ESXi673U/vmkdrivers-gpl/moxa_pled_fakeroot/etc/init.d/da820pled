@@ -1,0 +1,82 @@
+#!/bin/sh
+#
+# Copyright 2007 VMware, Inc.  All rights reserved.
+#
+# moxa_pled:
+#   Moxa DA-820C ESXi 6.x programmable LED driver
+#
+# chkconfig: on 90 10
+# description: Moxa DA-820 ESXi 5.x programmable LED driver
+#
+
+MODULE_PATH="/usr/lib/vmware/vmkmod"
+MOXA_PLED="moxa_pled"
+
+#
+# Sanity check
+#
+[ -e "${MODULE_PATH}/${MOXA_PLED}" ] || exit 0
+
+#
+# Log action
+#
+moxa_pled_log() {
+   echo "${1}"
+   logger moxa_pled "${1}"
+}
+
+#
+# Start moxa_pled
+#
+moxa_pled_start() {
+   moxa_pled_log "Load moxa_pled module"
+   vmkload_mod ${MODULE_PATH}/${MOXA_PLED}
+}
+
+#
+# Stop moxa_pled
+#
+moxa_pled_stop() {
+   moxa_pled_log "Unload moxa_pled module"
+   vmkload_mod -u ${MOXA_PLED}
+}
+
+#
+# Process comand line options
+#
+case "${1}" in
+   start)
+      moxa_pled_start
+   ;;
+
+   stop)
+      moxa_pled_stop
+   ;;
+
+   status)
+      if [ -n "$(vmkload_mod -l |grep "${MOXA_PLED}")" ] ; then
+         echo "${MOXA_PLED} is loadded"
+         exit 0
+      else
+         echo "${MOXA_PLED} is not loadded"
+         exit 3
+      fi
+   ;;
+
+   restart)
+      moxa_pled_stop
+
+      # wait till all instances have stopped
+      while [ -n "$(vmkload_mod -l |grep "${MOXA_PLED}")"  ] ; do
+         sleep 1
+      done
+
+      moxa_pled_start
+   ;;
+
+   *)
+      echo "Usage: $(basename "$0") {start|stop|status|restart}"
+      exit 1
+   ;;
+esac
+

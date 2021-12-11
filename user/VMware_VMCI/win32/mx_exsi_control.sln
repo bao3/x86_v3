@@ -1,0 +1,54 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31112.23
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mx_exsi_pled", "mx_exsi_pled\mx_exsi_pled.vcxproj", "{4FDFE474-096E-4B8C-A3FA-3A9B81809B21}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F76C4680-0D48-4F3A-8E85-D965472A4A64} = {F76C4680-0D48-4F3A-8E85-D965472A4A64}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "device_control", "device_control\device_control.vcxproj", "{F76C4680-0D48-4F3A-8E85-D965472A4A64}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mx_exsi_relay", "mx_exsi_relay\mx_exsi_relay.vcxproj", "{43508835-654B-427F-8C54-668DC6C93AA8}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Mixed Platforms = Debug|Mixed Platforms
+		Debug|Win32 = Debug|Win32
+		Release|Mixed Platforms = Release|Mixed Platforms
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4FDFE474-096E-4B8C-A3FA-3A9B81809B21}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{4FDFE474-096E-4B8C-A3FA-3A9B81809B21}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{4FDFE474-096E-4B8C-A3FA-3A9B81809B21}.Debug|Win32.ActiveCfg = Debug|Win32
+		{4FDFE474-096E-4B8C-A3FA-3A9B81809B21}.Debug|Win32.Build.0 = Debug|Win32
+		{4FDFE474-096E-4B8C-A3FA-3A9B81809B21}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{4FDFE474-096E-4B8C-A3FA-3A9B81809B21}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{4FDFE474-096E-4B8C-A3FA-3A9B81809B21}.Release|Win32.ActiveCfg = Release|Win32
+		{4FDFE474-096E-4B8C-A3FA-3A9B81809B21}.Release|Win32.Build.0 = Release|Win32
+		{F76C4680-0D48-4F3A-8E85-D965472A4A64}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{F76C4680-0D48-4F3A-8E85-D965472A4A64}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{F76C4680-0D48-4F3A-8E85-D965472A4A64}.Debug|Win32.ActiveCfg = Debug|Win32
+		{F76C4680-0D48-4F3A-8E85-D965472A4A64}.Debug|Win32.Build.0 = Debug|Win32
+		{F76C4680-0D48-4F3A-8E85-D965472A4A64}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{F76C4680-0D48-4F3A-8E85-D965472A4A64}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{F76C4680-0D48-4F3A-8E85-D965472A4A64}.Release|Win32.ActiveCfg = Release|Win32
+		{F76C4680-0D48-4F3A-8E85-D965472A4A64}.Release|Win32.Build.0 = Release|Win32
+		{43508835-654B-427F-8C54-668DC6C93AA8}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{43508835-654B-427F-8C54-668DC6C93AA8}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{43508835-654B-427F-8C54-668DC6C93AA8}.Debug|Win32.ActiveCfg = Debug|Win32
+		{43508835-654B-427F-8C54-668DC6C93AA8}.Debug|Win32.Build.0 = Debug|Win32
+		{43508835-654B-427F-8C54-668DC6C93AA8}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{43508835-654B-427F-8C54-668DC6C93AA8}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{43508835-654B-427F-8C54-668DC6C93AA8}.Release|Win32.ActiveCfg = Release|Win32
+		{43508835-654B-427F-8C54-668DC6C93AA8}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {9D337CFD-CCB3-4350-8534-8DF78820CAB2}
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,81 @@
+#!/bin/sh
+#
+# Copyright 2007 VMware, Inc.  All rights reserved.
+#
+# mx_vmci_server:
+#   Moxa DA-820 ESXi 5.x VMCI server
+#
+# chkconfig: on 92 9
+# description: Moxa DA-820 ESXi 5.x VMCI server
+#
+
+MOXA_VMCI_SERVER="/usr/lib/vmware/misc/bin/mx_vmci_server"
+
+#
+# Sanity check
+#
+[ -e "${MOXA_VMCI_SERVER}" ] || exit 0
+
+#
+# Log action
+#
+mx_vmci_server_log() {
+   echo "${1}"
+   logger mx_vmci_server "${1}"
+}
+
+#
+# Start mx_vmci_server
+#
+mx_vmci_server_start() {
+   mx_vmci_server_log "Start the mx_vmci_server"
+   ${MOXA_VMCI_SERVER}&
+}
+
+#
+# Stop mx_vmci_server
+#
+mx_vmci_server_stop() {
+   mx_vmci_server_log "Stop mx_vmci_server"
+   pkill -9 mx_vmci_server
+}
+
+#
+# Process comand line options
+#
+case "${1}" in
+   start)
+      mx_vmci_server_start
+   ;;
+
+   stop)
+      mx_vmci_server_stop
+   ;;
+
+   status)
+      if [ -n "$(ps |grep "mx_vmci_server")" ] ; then
+         echo "mx_vmci_server has started"
+         exit 0
+      else
+         echo "mx_vmci_server has stopped"
+         exit 3
+      fi
+   ;;
+
+   restart)
+      mx_vmci_server_stop
+
+      # wait till all instances have stopped
+      while [ -n "$(ps |grep "mx_vmci_server")"  ] ; do
+         sleep 1
+      done
+
+      mx_vmci_server_start
+   ;;
+
+   *)
+      echo "Usage: $(basename "$0") {start|stop|status|restart}"
+      exit 1
+   ;;
+esac
+

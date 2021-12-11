@@ -1,0 +1,402 @@
+1. Overview
+
+This is the VMWare VMCI code for communication between VMWare EXSi 6.x and VMWARE Gust OS. The mx_vmci_server.c is the VMCI server to communicate with the VMCI client, mx_exsi_pled.c and mx_exsi_relay.c. The client and server use the VMWare VMCI socket in communication. The source code contains two VMCI client utility, mx_exsi_pled.c, mx_exsi_di.c and mx_exsi_do.c wich can communicate with the VMCI server, mx_vmci_server.c. This is the block diagram of the communication.
+
+          ------------------------------------------
+         |      VMWare Guest OS (Linux/Windows)     |
+          ------------------------------------------
+               --------------   ---------------
+ client:      | mx_exsi_pled | | mx_exsi_relay |
+               --------------   ---------------
+
+                 VMCI communication
+
+             ------------------------------------
+ server:    |           mx_vmci_server           |
+             ------------------------------------
+             ------------------------------------
+            |           VMWare EXSi 6.x          |
+             ------------------------------------
+             ----------------     ---------------
+            | DA820PLED.vib  |   | DA820DIO.vib  |
+             ----------------     ---------------
+ -------------------------------------------------------------
+|             Moxa Embedded Computer (DA-820C)                 |
+ -------------------------------------------------------------
+
+2. Development environment
+
+O.S.: Debian 10
+Pre-install packages: open-vm-tools-dev build-essential
+$ apt-get install open-vm-tools-dev build-essential
+$ cd /usr/src
+$ apt-get source open-vm-tools
+
+The vmci_example contains the vmci_sockets.h header file .
+We have commented out following line and you don't need to install open-vm-tools package.
+
+CFLAGS=-I/usr/src/open-vm-tools-10.3.10/open-vm-tools/lib/include
+
+3. The source code brief
+
+mx_vmci_server.c: The VMCI server receives the VMCI command issued by the VMCI client to control the programmable LED and relay.
+mx_exsi_pled.c: The VMCI client utility for controling the programmable LED.
+mx_exsi_relay.c: The VMCI client utility for controlling the RELAY port.
+device_control.h: Declare the device control API, such as device_open(), device_close(), ... .
+device_control.c: Implement the device control API, such as device_open(), device_close(), ... .
+relay_ctl.h: Declare the relay control API.
+relay_ctrl.c: Implement the relay control API.
+pled_ctrl.h: Declare the programmable LED control API.
+pled_ctrl.c: Implement the programmable LED control API.
+
+
+The source code was designed by following architecture.
+
+          -----------------   --------------   ---------------
+         |  mx_vmci_server | | mx_exsi_pled | | mx_exsi_relay |
+          -----------------   --------------   ---------------
+    -------------------------------------------------------------------
+   |                         device_control                            |
+    -------------------------------------------------------------------
+          -----------                             ------------
+         | pled_ctrl |                           | relay_ctrl |
+          -----------                             ------------
+
+4. The device control layer and API definitions
+
+The device_contrl defines a virtual layer for controlling the programming LED and relay device. Here are the function defintitions.
+
+-Open:
+
+/*
+ * @brief open a device by given information
+ * @param type the device type (pled, relay, ...)
+ * @return 
+ *    > 0: file descriptor;
+ *    <= 0 : Error
+ */
+int device_open (char* type);
+
+/* pled */
+int fd_pled = device_open("pled");
+
+/* relay */
+int fd_relay = device_open("relay");
+
+-Close:
+
+/*
+ * @brief close a device
+ * @param The file descriptor as an unique identifier return from device_open
+ * @return void
+ */
+void device_close (int file_descriptor);
+
+/* pled */
+device_close(fd_pled);
+
+/* relay */
+device_close(fd_relay);
+
+-List:
+
+/*
+ * @brief list out the available devices in the given address
+ * @param The file descriptor as an unique identifier return from device_open
+ * @return number of device, 
+ *  > 0  : The available number of devices. The device index starts from 1.
+ *  <= 0 : Error occurred. 
+ */
+int device_list (int file_descriptor);
+
+/* pled
+ * example of the devices may be:
+ * file_descriptor = fd_pled
+ * the return num should be 8 of DA-820-LX
+ */
+int num = device_list(fd_pled);
+
+/* Realy
+ * example of the devices may be:
+ * type = fd_relay
+ * the return num should be 1
+ */
+int num = device_list(fd_relay);
+
+-Get:
+
+/*
+ * @brief get some data of the specified device
+ * @param The file descriptor as an unique identifier return from device_open
+ * @param the index of the corresponding device.
+ * @param the return from device_get()
+ * @return 
+ *    >= 0: Success;
+ *    < 0 : Error
+ */
+int device_get (int file_descriptor, int index, int &value);
+/* pled */
+int value;
+/* The first LED index start from 1 */
+int res = device_get(fd_pled, 1, &value);
+
+/* RELAY */
+int on_off;	/* on: 1; off: 0 */
+int res = device_get(fd_relay, 1, &on_off);	/* relay */
+
+-Set:
+
+/*
+ * @brief set some data of the specified device
+ * @param The file descriptor as an unique identifier return from device_open
+ * @param the index of the corresponding device.
+ * @param the value to be set to the device
+ * @return 
+ *    >= 0: Success;
+ *    < 0 : Error
+ */
+int device_set (int file_descriptor, int index, int value);
+
+/* pled */
+int on_off=1;	/* on: 1; off: 0 */
+int res = device_set(fd_pled, 1, on_off);
+
+/* RELAY */
+int on_off=1;	/* on: 1; off: 0 */
+int res = device_set(fd_relay, 1, on_off);
+int on_off=0;	/* on: 1; off: 0 */
+int res = device_set(fd_relay, 1, on_off);
+
+-Read:
+
+/*
+ * @brief read data from the specified device
+ * @param The file descriptor as an unique identifier return from device_open
+ * @param data read from the device.
+ * @param size the size of the data read from the device.
+ * @return 
+ *   0   : End of file
+ *   >   : The number of data read from the device
+ *   <0  : Error
+ */
+int device_read (char* type, char* data, size_t size);
+
+/* pled */
+unsigned char data;
+int ret = device_read(fd_pled, &data, sizeof(data));
+
+
+-Write:
+
+/*
+ * @brief write data to the specified device
+ * @param The file descriptor as an unique identifier return from device_open
+ * @param data the data written to the device.
+ * @param size the size of the data read from the device.
+ * @return 
+ *   0   : End of file
+ *   > 0 : The number of data written to the device
+ *   < 0 : Error
+ */
+int device_write (char* type, char* data, size_t size);
+
+/* pled */
+unsigned char data = "11111111";
+int res = device_write(fd_pled, &data, sizeof(data));
+
+
+5. The VMCI packet format
+
+   ---------------------------
+  |  char device_request[32]  |
+   ---------------------------
+  |  char device_type[32]     |
+   ---------------------------
+  |  char arg1[32]            |
+   ---------------------------
+  |  char arg2[32]            |
+   ---------------------------
+
+The client and server both use the packet structure to communicate with each other.
+For example to call the `fd=device_open("pled");` function, it transmits the request to the mx_vmci_server for openning a programmable LED device.
+
+device_request:device_open
+device_type:pled
+arg1:
+arg2:
+
+The mx_vmci_server receives this packet will reply following packet to tell the client the file descriptor for this device. The client can retrive the file descriptor from the arg1.
+
+device_request:device_open
+device_type:		// device_open
+arg1:1			// fd or error status
+arg2:
+
+Then the client can call the `num=device_list(fd)` to request the number of devices from the server. This packet will be transmitted to the mx_vmci_server.
+
+device_request:device_list
+device_type:1		// fd
+arg1:
+arg2:
+
+The mx_vmci_server get the device_list request with file descriptor. It will lookup the number and reply to the client with this packet.
+
+device_request:device_list
+device_type:1		// fd
+arg1:8			// number of devices or error status
+arg2:
+
+If the client wants to turn on the first programmable LED, you can call the function `ret=device_set(fd, 1, 1);`. The request packet
+
+device_request:device_set
+device_type:1		// fd
+arg1:1			// index
+arg2:1			// value
+
+The mx_vmci_server will reply with this packet.
+
+device_request:device_set
+device_type:1		// fd
+arg1:1			// *    >= 0: Success; < 0 : Error
+arg2:
+
+If the client needs the first programmable LED's status, you can call `ret=device_get(fd, 1, &value);`
+
+device_request:device_get
+device_type:1		// fd
+arg1:
+arg2:
+
+The mx_vmci_server will reply the first LED status from arg1.
+
+Receive from server:
+device_request:device_get
+device_type:1		// fd
+arg1:1			// value
+arg2:
+
+The client can also request the mx_vmci_server to turn on all the LEDs with the bitmap "11111111" of this call `ret=device_write(fd, bitmap, sizeof(bitmap));`.
+
+device_request:device_write
+device_type:1		// fd
+arg1:9			// Length
+arg2:11111111		// Data
+
+The mx_vmci_server will reply
+
+device_request:device_write
+device_type:1		// fd
+arg1:9			// Return value. > 0 : The number of data written to the device; < 0 : Error.
+arg2:11111111		// Data
+
+If the client needs to know each LED status, you can use the call `ret=device_read(fd, bitmap, sizeof(bitmap));`
+
+device_request:device_read
+device_type:1		// fd
+arg1:9			// Length
+arg2:
+
+The mx_vmci_server will reply the current LED bitmap
+
+Receive from server:
+device_request:device_read
+device_type:		// fd
+arg1:8			// Length
+arg2:11111111		// Data
+
+Finally to close the programmable LED with `device_close(fd);`
+
+device_request:device_close
+device_type:1		// fd
+arg1:
+arg2:
+
+The mx_vmci_server will release the file descriptor and reply the client with this packet.
+
+device_request:device_close
+device_type:1		// fd
+arg1:
+arg2:
+
+
+6. To build the code:
+
+Use the make, the Makefile will help you to build the code in Linux
+
+root@Debian10:/tmp# make
+
+To make the DA820VMCIS.vib package, you can make package to create it.
+
+root@Debian10:/tmp# make package
+
+Use the cleanup the binaries, you can use `make clean`.
+
+root@Debian10:/tmp# make clean
+
+7. Install the DA820VMCIS.vib on VMWare EXSi 6.x host
+
+[root@localhost:~] esxcli software vib install -v /tmp/DA820VMCI.vib   --maintenance-mode -f
+Installation Result
+   Message: Operation finished successfully.
+   Reboot Required: false
+   VIBs Installed: Moxa_bootbank_DA820VMCI_1.0.0-0.0.1
+   VIBs Removed:
+   VIBs Skipped:
+
+Then reboot VMWare EXSi. After system reboot complete, you can check if mx_vmci_server is running for the VMCI client utility to connect and control the programmable LED and relay.
+
+~ # ps |grep mx_vmci_server
+34564 34564 mx_vmci_server       /usr/lib/vmware/misc/bin/mx_vmci_server
+
+============================================================================
+8. Using the mx_exsi_pled utility.
+
+root@Debian10:/tmp# ./mx_exsi_pled
+Get/set the programmable LED utility
+Usage: ./mx_exsi_pled -l -n [-r|-w] [-g|-s] [-h]
+    Show the mx_exsi_pled information if no argument apply.
+    -h: Show this information.
+    -l: List the number of LEDs.
+    -n: Indicate the n-the LED.
+    -r: Read the LED bitmap.
+    -w: Write the bitmap to the LED.
+    -g: Get the LED port value.
+    -s: Set the value to the LED port.
+
+List the number of LEDs.
+root@Debian10:/tmp# ./mx_exsi_pled -l
+pled number:8
+
+Turn on the first 4 LEDs and turn off the remaining 4 LEDs.
+root@Debian10:/tmp# ./mx_exsi_pled -w "11110000"
+
+Turn on, off, on, off, on, off, on, off the LEDs.
+root@Debian10:/tmp# ./mx_exsi_pled -w "10101010"
+
+Turn on the 1th LED.
+root@Debian10:/tmp# ./mx_exsi_pled -n 1 -s 1
+Turn on the LED, 1
+
+Turn on the 8th LED.
+root@Debian10:/tmp# ./mx_exsi_pled -n 8 -s 1
+Turn on the LED, 8
+
+root@Debian10:/tmp# ./mx_exsi_pled -n 8 -s 0
+Turn off the LED, 8
+===========================================================================
+
+9. Using the mx_exsi_relay utility.
+
+root@Debian10:/tmp# ./mx_exsi_relay
+Get/Set the n-th RELAY status utility
+Usage: ./src/vmci_client/mx_exsi_relay [-g|-s] [-h]
+    -g Get the n-th RELAY status.
+    -s: Set the value to the RELAY.
+    -h: Show this information
+
+Set the relay
+root@Debian10:/tmp# ./mx_exsi_relay -s 1
+root@Debian10:/tmp# ./mx_exsi_relay -s 0
+
+Get the relay status
+root@Debian10:/tmp# ./mx_exsi_relay -g

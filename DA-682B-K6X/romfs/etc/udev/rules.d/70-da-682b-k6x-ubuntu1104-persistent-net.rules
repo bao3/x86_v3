@@ -1,0 +1,30 @@
+# For DA-682B-K6X platform to remap the ethernet order as the label in the case
+
+# For the embedded LAN port naming
+# Renaming the enp16s0 as enp0s0
+KERNEL=="enp*",KERNELS=="0000:10:00.0",NAME="enp0s0"
+# Renaming the enp15s0 as enp1s0
+KERNEL=="enp*",KERNELS=="0000:0f:00.0",NAME="enp1s0"
+# Renaming the enp14s0 as enp2s0
+KERNEL=="enp*",KERNELS=="0000:0e:00.0",NAME="enp2s0"
+# Renaming the enp13s0 as enp3s0
+KERNEL=="enp*",KERNELS=="0000:0d:00.0",NAME="enp3s0"
+# Renaming the enp12s0 as enp4s0
+KERNEL=="enp*",KERNELS=="0000:0c:00.0",NAME="enp4s0"
+# Renaming the enp11s0 as enp5s0
+KERNEL=="enp*",KERNELS=="0000:0b:00.0",NAME="enp5s0"
+
+# For the DE-LN08 LAN port naming
+# Renaming the enp3s0 as enp6s0
+KERNEL=="enp*",KERNELS=="0000:03:00.0",NAME="enp6s0"
+# Renaming the enp4s0 as enp7s0
+KERNEL=="enp*",KERNELS=="0000:04:00.0",NAME="enp7s0"
+# Renaming the enp5s0 as enp8s0
+KERNEL=="enp*",KERNELS=="0000:05:00.0",NAME="enp8s0"
+# Renaming the enp6s0 as enp9s0
+KERNEL=="enp*",KERNELS=="0000:06:00.0",NAME="enp9s0"
+# Renaming the enp7s0 as enp10s0
+KERNEL=="enp*",KERNELS=="0000:07:00.0",NAME="enp10s0"
+# Renaming the enp8s0 as enp11s0
+KERNEL=="enp*",KERNELS=="0000:08:00.0",NAME="enp11s0"
+

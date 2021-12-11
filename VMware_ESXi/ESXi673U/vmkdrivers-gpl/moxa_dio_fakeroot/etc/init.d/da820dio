@@ -1,0 +1,82 @@
+#!/bin/sh
+#
+# Copyright 2007 VMware, Inc.  All rights reserved.
+#
+# moxa_dio:
+#   Moxa DA-820 ESXi 6.x DIO/Relay/UART mode control driver
+#
+# chkconfig: on 90 10
+# description: Moxa DA-820 ESXi 6.x DIO/Relay/UART mode control driver
+#
+
+MODULE_PATH="/usr/lib/vmware/vmkmod"
+MOXA_DIO="moxa_dio"
+
+#
+# Sanity check
+#
+[ -e "${MODULE_PATH}/${MOXA_DIO}" ] || exit 0
+
+#
+# Log action
+#
+moxa_dio_log() {
+   echo "${1}"
+   logger "${MOXA_DIO}" "${1}"
+}
+
+#
+# Start moxa_dio
+#
+moxa_dio_start() {
+   moxa_dio_log "Load ${MOXA_DIO} module"
+   vmkload_mod ${MODULE_PATH}/${MOXA_DIO}
+}
+
+#
+# Stop moxa_dio
+#
+moxa_dio_stop() {
+   moxa_dio_log "Unload ${MOXA_DIO} module"
+   vmkload_mod -u ${MOXA_DIO}
+}
+
+#
+# Process comand line options
+#
+case "${1}" in
+   start)
+      moxa_dio_start
+   ;;
+
+   stop)
+      moxa_dio_stop
+   ;;
+
+   status)
+      if [ -n "$(vmkload_mod -l |grep ${MOXA_DIO})" ] ; then
+         echo "${MOXA_DIO} is loadded"
+         exit 0
+      else
+         echo "${MOXA_DIO} is not loadded"
+         exit 3
+      fi
+   ;;
+
+   restart)
+      moxa_dio_stop
+
+      # wait till all instances have stopped
+      while [ -n "$(vmkload_mod -l |grep ${MOXA_DIO})"  ] ; do
+         sleep 1
+      done
+
+      moxa_dio_start
+   ;;
+
+   *)
+      echo "Usage: $(basename "$0") {start|stop|status|restart}"
+      exit 1
+   ;;
+esac
+

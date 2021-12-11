@@ -1,0 +1,45 @@
+CC=gcc
+AR=ar
+STRIP=strip
+# Jared: We have copy the vmci_sockets.h from open-vm-tools package. So you don't need to install the open-vm-tools and include the headers in open-vm-tools.
+#CFLAGS=-I/usr/src/open-vm-tools-2012.05.21/vsock/shared/ 
+CFLAGS+=-I$(shell pwd)/src/include/
+#CFLAGS+=-DDEBUG		# Define for debugging
+#CFLAGS+=-DDEBUG_DUMP_PACKET	# Define for dumpping packet
+
+LDFLAGS=-L$(shell pwd)/src/lib -ldevicectl
+
+export CC AR STRIP CFLAGS LDFLAGS
+
+.PHONY: lib vmci_client release_src
+
+all: lib vmci_client
+
+lib:
+	$(MAKE) -C src/lib
+
+vmci_client: 
+	$(MAKE) -C src/vmci_client
+
+%.o:%.c
+	$(CC) $(CFLAGS) -c $?
+
+clean:
+	$(MAKE) -C src/lib clean
+	$(MAKE) -C src/vmci_client clean
+	rm -rf *.vib \
+	package_vmci_server/usr
+
+release_src:
+	mkdir -p vmci_example
+	cp -a src/* vmci_example/
+	# Remove the non-released files
+	rm -rf vmci_example/include/watchdog_ctrl.h \
+	vmci_example/vmci_client/mx_exsi_watchdog.c \
+	vmci_example/vmci_server
+	# Copy the released version Makefile
+	cp -a Makefile.client vmci_example/Makefile
+	tar czvf vmci_example.tar.gz vmci_example
+	rm -rf vmci_example
+
+

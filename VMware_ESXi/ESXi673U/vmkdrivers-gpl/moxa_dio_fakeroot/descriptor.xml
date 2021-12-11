@@ -1,0 +1,40 @@
+<vib version="5.0">
+<type>bootbank</type>
+<name>DA820DIO</name>
+<version>1.0.0-0.0.1</version>
+<vendor>Moxa</vendor>
+<summary>Moxa DA-820C ESXi 6.x DIO/Relay/UART mode control driver</summary>
+<description>Moxa DA-820C ESXi 6.x DIO/Relay/UART mode control driver</description>
+<relationships>
+  <depends></depends>
+  <conflicts/>
+  <replaces/>
+  <provides/>
+  <compatibleWith/>
+</relationships>
+
+<software-tags>
+  <tag>driver</tag>
+  <tag>module</tag>
+</software-tags>
+
+<system-requires>
+  <maintenance-mode>false</maintenance-mode>
+</system-requires>
+
+<file-list>
+  <file>etc/init.d/moxa_dio</file>
+  <file>usr/lib/vmware/vmkmod/moxa_dio</file>
+</file-list>
+
+<acceptance-level>community</acceptance-level>
+<live-install-allowed>true</live-install-allowed>
+<live-remove-allowed>true</live-remove-allowed>
+<cimom-restart>false</cimom-restart>
+<stateless-ready>true</stateless-ready>
+<overlay>false</overlay>
+
+<payloads>
+  <payload name="DA820DIO" type="tgz" size="373078"></payload>
+</payloads>
+</vib>

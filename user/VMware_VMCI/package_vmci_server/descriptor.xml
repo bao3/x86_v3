@@ -1,0 +1,28 @@
+<vib version="5.0">
+<type>bootbank</type>
+<name>DA820VMCI</name>
+<version>1.0.0-0.0.1</version>
+<vendor>Moxa</vendor>
+<summary>Moxa DA-820 ESXi 6.x Moxa VMCI server v1.0</summary>
+<description>Moxa DA-820 ESXi 6.x Moxa VMCI server</description>
+<urls/>
+<relationships><depends></depends><conflicts/><replaces/><provides/><compatibleWith/></relationships>
+<software-tags></software-tags>
+<system-requires>
+  <maintenance-mode>false</maintenance-mode>
+</system-requires>
+<file-list>
+  <file>usr/lib/vmware/misc/bin/mx_vmci_server</file>
+  <file>etc/init.d/da820_vmci_server</file>
+</file-list>
+<acceptance-level>community</acceptance-level>
+<live-install-allowed>true</live-install-allowed>
+<live-remove-allowed>true</live-remove-allowed>
+<cimom-restart>false</cimom-restart>
+<stateless-ready>true</stateless-ready>
+<overlay>false</overlay>
+<payloads>
+  <payload name="DA820VMCI" type="tgz" size="9450">
+  </payload>
+</payloads>
+</vib>
