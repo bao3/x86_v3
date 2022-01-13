@@ -76,7 +76,7 @@ static struct file_operations irigb_fops = {
 };
 
 static  struct pci_device_id    irigb_pcibrds[] = {
-	 {PCI_VENDOR_ID_MOXA, MX_IRIGB_DEVICE_ID, PCI_ANY_ID, PCI_ANY_ID, 0, 0, (kernel_ulong_t*)&IRIG_B},
+	 {PCI_VENDOR_ID_MOXA, MX_IRIGB_DEVICE_ID, PCI_ANY_ID, PCI_ANY_ID, 0, 0, (kernel_ulong_t)&IRIG_B},
 	 {0}
 };
 
